@@ -15,7 +15,7 @@ export const useLogin = () => {
             if (!response)
                 throw new Error('Something went wrong')
 
-            return response
+            return response.data
 
         } catch (error) {
             console.error(error)

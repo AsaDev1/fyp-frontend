@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useLogin } from "../../hooks/Auth/useLogin";
 import { useNavigate } from "react-router-dom";
 
@@ -18,16 +17,16 @@ function LoginPage() {
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    console.log('email:', email);
-    console.log('password: ',password);
     const response = await login(email, password)
-    console.log(response.data)
-    // if(response.data.status === 'success') navigate('/dashboard')
+    if(response){
+      if(response.status === 'success')
+        navigate('/supervisor/add-groups')
+    }
   }
  
   return (
     <div
-      className="bg-cover bg-center h-screen"
+      className="bg-cover bg-center h-screen relative"
       style={{ backgroundImage: "url('/Assets/auth-bg.jpg')" }}
     >
       <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8 items-center">
