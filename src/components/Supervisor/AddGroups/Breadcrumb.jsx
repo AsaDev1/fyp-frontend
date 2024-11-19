@@ -2,7 +2,7 @@ import React from "react";
 
 const Breadcrumb = () => {
   return (
-    <div className="wrapper mt-8">
+    <div className="wrapper">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-400">

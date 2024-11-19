@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const Form = () => {
+const Form = ({onSubmit}) => {
     const [formData, setFormData] = useState({
       groupId: 'CS-101',
       projectName: '',
@@ -57,11 +57,12 @@ const Form = () => {
     const handleSubmit = (e) => {
       e.preventDefault();
       console.log('Form Data Submitted:', formData);
+      onSubmit(formData); // Pass the form data to the parent
       // Add your submit logic here
     };
 
   return (
-    <form className="p-8 rounded mt-6" onSubmit={handleSubmit}>
+    <form className="p-8 rounded mt-3" onSubmit={handleSubmit}>
       <div className="grid grid-cols-2 gap-6">
         {/* Group ID */}
         <div>
@@ -121,7 +122,7 @@ const Form = () => {
         {/* Batch */}
         <div>
           {errors.batch && (
-            <p className="text-red-500 text-sm mt-1 transition-opacity duration-300 ease-in-out absolute z-10 p-2 rounded-xl left-96 ml-44">
+            <p className="text-red-500 text-sm mt-1 transition-opacity duration-300 ease-in-out absolute z-10 p-2 rounded-xl left-96 text-right">
               {errors.batch}
             </p>
             )}

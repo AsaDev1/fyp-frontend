@@ -1,11 +1,11 @@
 import React from 'react'
-import Sidebar from "./Sidebar";
+// import Sidebar from "./Sidebar";
 import MainContent from "./MainContent";
 
 const AddGroups = () => {
   return (
     <div className="flex bg-gray-100">
-      <Sidebar />
+      {/* <Sidebar /> */}
       <MainContent />
     </div>
   )
