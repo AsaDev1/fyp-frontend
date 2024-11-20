@@ -7,7 +7,7 @@ const Sidebar = () => {
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <div className="bg-[#3096FF] text-white w-[270px] flex flex-col max-lg:w-[225px]">
+      <div className="bg-[#3096FF] text-white w-[290px] flex flex-col max-lg:w-[225px]">
         <div className="flex items-center justify-center">
           <img src="/Assets/logo.png" alt="Logo" />
         </div>

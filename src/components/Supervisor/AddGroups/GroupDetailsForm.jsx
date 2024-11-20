@@ -28,7 +28,7 @@ const GroupDetailsForm = ({onSubmit, initialData}) => {
           if (!regex.test(value.trim())) {
             setErrors((prevErrors) => ({
               ...prevErrors,
-              batch: 'Batch format must be FA-xx or SP-xx (e.g., FA-23 or SP-24).',
+              batch: 'Batch format must be FAxx or SPxx (E.g., FA23 or SP24).',
             }));
           } else {
             setErrors((prevErrors) => ({
@@ -67,7 +67,7 @@ const GroupDetailsForm = ({onSubmit, initialData}) => {
     };
 
   return (
-    <form className="p-8 rounded mt-3" onSubmit={handleSubmit}>
+    <form className="mt-9 mr-32" onSubmit={handleSubmit}>
       <div className="grid grid-cols-2 gap-6">
         {/* Supervisor */}
         <div>
@@ -125,23 +125,25 @@ const GroupDetailsForm = ({onSubmit, initialData}) => {
         </div>
 
         {/* Batch */}
-        <div>
-          {errors.batch && (
-            <p className="text-red-500 text-sm mt-1 transition-opacity duration-300 ease-in-out absolute z-10 p-2 rounded-xl left-96 text-right">
-              {errors.batch}
-            </p>
+        <div className="relative">
+          <div className="flex items-center justify-between">
+            <label className="block text-gray-700 text-left">Batch</label>
+            {errors.batch && (
+              <p className="text-red-500 text-sm ml-2">
+                {errors.batch}
+              </p>
             )}
-          <label className="block text-gray-700 text-left">Batch</label>
+          </div>
           <input
             className="w-full fill-input mt-2 p-2 border rounded"
             name="batch"
             type="text"
-            placeholder='FA/SPxx'
+            placeholder="FA/SPxx"
             value={formData.batch}
             onChange={handleChange}
-            />
-          
+          />
         </div>
+
 
         {/* No. of Members */}
         <div>

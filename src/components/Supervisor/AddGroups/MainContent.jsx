@@ -5,21 +5,12 @@ import Breadcrumb from './Breadcrumb';
 import GroupDetailsForm from './GroupDetailsForm';
 import StudentsAddForm from './StudentsAddForm';
 import SubjectsVerificationPage from './SubjectsVerification';
+import UploadFilesForm from './UploadFilesForm'
 
 
 const MainContent = () => {
-  // const { getSubjects } = useSubjects();
   const navigate = useNavigate();
   const location = useLocation();
-
-  // useEffect(()=>{
-  //   const getReqSubjects = async () => {
-  //     const subjects = await getSubjects()
-  //     console.log("subjects data", subjects)
-  //   }
-
-  //   getReqSubjects()
-  // })
 
   const [formData, setFormData] = useState({
     form1: {
@@ -52,30 +43,37 @@ const MainContent = () => {
     navigate('step3'); 
   };
 
-  const currentStep = location.pathname === '/supervisor/add-groups/step3' ? 3 : location.pathname === '/supervisor/add-groups/step2' ? 2 : 1;
+  const currentStep = 
+  location.pathname === '/supervisor/add-groups' ? 1 :
+  location.pathname === '/supervisor/add-groups/step2' ? 2 :
+  location.pathname === '/supervisor/add-groups/step3' ? 3 :
+  location.pathname === '/supervisor/add-groups/docs' ? 4 : 0;
 
+return (
+  <div className="flex-1 p-10 max-lg:p-6 min-h-screen">
+    <Header />
+    <Breadcrumb />
 
-  return (
-    <div className="flex-1 p-10 max-lg:p-6 min-h-screen">
-      <Header />
-      <Breadcrumb />
-
-      { currentStep === 1 ? (
-        <GroupDetailsForm 
-          onSubmit={handleForm1Submit} 
-          initialData={formData.form1} 
-        />
-      ) : currentStep === 2 ? (
-        <StudentsAddForm 
-          numOfMembers={parseInt(formData.form1.members)} 
-          onSubmit={handleForm2Submit} 
-          initialData={formData.form2} 
-        />
-      ): (
-        <SubjectsVerificationPage />  // Replace with your actual component for step 3
-      )}
-    </div>
-  );
-};
+    {currentStep === 1 ? (
+      <GroupDetailsForm 
+        onSubmit={handleForm1Submit} 
+        initialData={formData.form1} 
+      />
+    ) : currentStep === 2 ? (
+      <StudentsAddForm 
+        numOfMembers={parseInt(formData.form1.members, 10)} 
+        onSubmit={handleForm2Submit} 
+        initialData={formData.form2} 
+      />
+    ) : currentStep === 3 ? (
+      <SubjectsVerificationPage />  // Replace with your actual component for step 3
+    ) : currentStep === 4 ? (
+      <UploadFilesForm />
+    ) : (
+      <div>Invalid step. Please check the URL.</div>
+    )}
+  </div>
+);
+}
 
 export default MainContent;

@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useSubjects } from '../../../hooks/Subjects/useSubjects';
 
 const SubjectTable = () => {
+    const navigate = useNavigate();
     const { getSubjects } = useSubjects();
     const [rows, setRows] = useState([]);
 
@@ -41,11 +43,15 @@ const SubjectTable = () => {
         );
     };
 
+    const handleClickNext = () => {
+        navigate('docs');
+    }
+
     // Check if all rows have "yes" selected
     const allYesSelected = rows.every((row) => row.yes);
 
     return (
-        <div className="p-8 rounded mt-3">
+        <div className="mt-9 mr-32">
             <span className="text-left">
                 <p>Please confirm that if the students have cleared all the Prerequisites of FYP-I</p>
             </span>
@@ -90,6 +96,7 @@ const SubjectTable = () => {
                         allYesSelected ? 'bg-red-500 text-white' : 'bg-gray-300 text-gray-600 cursor-not-allowed'
                     }`}
                     disabled={!allYesSelected}
+                    onClick={handleClickNext}
                 >
                     Next &gt;&gt;
                 </button>

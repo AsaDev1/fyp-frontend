@@ -16,6 +16,8 @@ const Router = () => {
             <Route path="/supervisor/add-groups" element={<AddGroups />} > 
                 <Route path="step2" element={<AddGroups />} />
                 <Route path="step3" element={<AddGroups />} />
+                <Route path="docs" element={<AddGroups />} />
+                
             </Route>
             
             {/* Add more routes as needed */}

@@ -1,7 +1,16 @@
 import React, { useState } from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEllipsisV, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
 const Profile = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const facultyName = localStorage.getItem('faculty_name');
+
+  const handleLogout = () => {
+    localStorage.removeItem('faculty_id');
+    localStorage.removeItem('faculty_name');
+    window.location.href = "/";
+  }
 
   return (
     <div className="flex items-center px-4 mt-6 relative">
@@ -12,7 +21,7 @@ const Profile = () => {
           src="/Assets/female- avatar.webp"
         />
         <div className="ml-4">
-          <div className="text-white">Miss. Mahwish W.</div>
+          <div className="text-white">{facultyName}</div>
           <div className="text-blue-600 text-sm bg-[#D9D9D9] w-fit rounded-xl px-2">
             Faculty
           </div>
@@ -24,13 +33,16 @@ const Profile = () => {
           className="text-white focus:outline-none"
           onClick={() => setDropdownOpen(!dropdownOpen)}
         >
-          <i className="fas fa-ellipsis-v"></i>
+          <FontAwesomeIcon icon={faEllipsisV} className="" />
         </button>
         {dropdownOpen && (
-          <div className="bg-[#001F3F] text-black rounded shadow-lg mt-2 w-36 absolute right-0">
-            <a className="text-[#F0483E] block px-4 py-2 hover:bg-gray-200" href="#">
-              <i className="fas fa-sign-out-alt"></i> Logout
-            </a>
+          <div className="bg-[#001F3F] text-black rounded shadow-lg mt-2 w-32 absolute right-0">
+            <button 
+              className="text-[#F0483E] w-full py-2 hover:bg-gray-200 rounded"
+              onClick={handleLogout}
+            >
+              <FontAwesomeIcon icon={faSignOutAlt} className="mr-2" /> Logout
+            </button>
           </div>
         )}
       </div>
