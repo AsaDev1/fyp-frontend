@@ -11,7 +11,10 @@ const Router = () => {
             <Route exact path="/" element={<Login />} />
             <Route element={<SideBar/>}> 
             <Route path="/dashboard" element={<SupervisorDashboard />} />
-            <Route path="/supervisor/add-groups" element={<AddGroups />} />
+            {/* supervisor route and its child routes for navigation */}
+            <Route path="/supervisor/add-groups" element={<AddGroups />} > 
+                <Route path="step2" element={<AddGroups />} /> 
+            </Route>
             {/* Add more routes as needed */}
             </Route>
         </Routes>

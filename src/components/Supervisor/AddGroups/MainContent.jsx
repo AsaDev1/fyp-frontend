@@ -1,17 +1,28 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Header from './Header';
 import Breadcrumb from './Breadcrumb';
-import Form from './Form';
-import GroupForm from './StudentsAddForm';
+import GroupDetailsForm from './GroupDetailsForm';
+import StudentsAddForm from './StudentsAddForm';
+import { useSubjects } from '../../../hooks/Subjects/useSubjects'
 
 const MainContent = () => {
-  // State to track the current step
-  const [currentStep, setCurrentStep] = useState(1);  // 1 for first form, 2 for second form
+  const { getSubjects } = useSubjects();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  // State to hold form data from both forms
+  useEffect(()=>{
+    const getReqSubjects = async () => {
+      const subjects = await getSubjects()
+      console.log("subjects data", subjects)
+    }
+
+    getReqSubjects()
+  })
+
   const [formData, setFormData] = useState({
     form1: {
-      groupId: 'CS-101',
+      supervisor: localStorage.getItem('faculty_name'),
       projectName: '',
       program: '',
       area: '',
@@ -23,29 +34,23 @@ const MainContent = () => {
     form2: [],
   });
 
-  // Function to handle form 1 submission and switch step
   const handleForm1Submit = (data) => {
-    console.log("Form 1 data:", data);
     setFormData((prevState) => ({
       ...prevState,
       form1: data,
     }));
-    setCurrentStep(2);  // Switch to step 2 after Form 1 submission
-    console.log("current step:", currentStep);
-    
+    navigate('step2');  // Correct relative navigation
   };
 
-  // Function to handle form 2 submission
   const handleForm2Submit = (data) => {
-    console.log("Form 2 data:", data);
     setFormData((prevState) => ({
       ...prevState,
       form2: data,
     }));
-    // Combine both form data for final submission (example)
-    console.log("Final Data Submitted:", { ...formData.form1, form2: data });
-    // You can now send the final combined data to the backend
+    console.log('Final Data:', { ...formData.form1, form2: data });
   };
+
+  const currentStep = location.pathname === '/supervisor/add-groups/step2' ? 2 : 1;
 
   return (
     <div className="flex-1 p-10 max-lg:p-6 min-h-screen">
@@ -53,9 +58,16 @@ const MainContent = () => {
       <Breadcrumb />
 
       {currentStep === 1 ? (
-        <Form onSubmit={handleForm1Submit} />
+        <GroupDetailsForm 
+          onSubmit={handleForm1Submit} 
+          initialData={formData.form1} 
+        />
       ) : (
-        <GroupForm numOfMembers={parseInt(formData.form1.members)} onSubmit={handleForm2Submit} />
+        <StudentsAddForm 
+          numOfMembers={parseInt(formData.form1.members)} 
+          onSubmit={handleForm2Submit} 
+          initialData={formData.form2} 
+        />
       )}
     </div>
   );

@@ -1,9 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const GroupForm = ({ numOfMembers, onSubmit }) => {
-  const [formData, setFormData] = useState(
-    Array.from({ length: numOfMembers }, () => ({ id: '', name: '' }))
-  );
+const GroupForm = ({ numOfMembers, onSubmit, initialData }) => {
+  const [formData, setFormData] = useState(initialData);
+
+
+  useEffect(() => {
+    // If initialData changes (e.g., when navigating back to this step), update formData
+    if (initialData && initialData.length > 0) {
+      setFormData(initialData);
+    } else {
+      // Initialize formData if it's empty and numOfMembers is provided
+      setFormData(Array.from({ length: numOfMembers }, () => ({ id: '', name: '' })));
+    }
+  }, [initialData, numOfMembers]);
 
   const handleInputChange = (index, field, value) => {
     setFormData((prevFormData) => {
@@ -21,7 +30,7 @@ const GroupForm = ({ numOfMembers, onSubmit }) => {
   );
 
   const handleSubmit = () => {
-    onSubmit(formData); // Pass the form data to the parent
+    onSubmit(formData); // Pass the updated form data to the parent
   };
 
   const renderFields = () => {

@@ -15,6 +15,9 @@ export const useLogin = () => {
             if (!response)
                 throw new Error('Something went wrong')
 
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('faculty_name', response.data.facultyName);
+
             return response.data
 
         } catch (error) {

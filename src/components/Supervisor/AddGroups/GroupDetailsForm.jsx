@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const Form = ({onSubmit}) => {
+const GroupDetailsForm = ({onSubmit, initialData}) => {
     const [formData, setFormData] = useState({
-      groupId: 'CS-101',
+      supervisor: localStorage.getItem('faculty_name'),
       projectName: '',
       program: '',
       area: '',
@@ -12,6 +12,11 @@ const Form = ({onSubmit}) => {
       coSupervisor: '',
     });
     
+    useEffect(() => {
+      setFormData(initialData);  // Update form data when initialData changes
+    }, [initialData]);
+
+
     const [errors, setErrors] = useState({ batch: '' }); // Store validation errors
 
     const handleChange = (e) => {
@@ -19,7 +24,7 @@ const Form = ({onSubmit}) => {
     
         // Validate batch field on change
         if (name === 'batch') {
-          const regex = /^(FA|SP)-\d{2}$/; // Match FA-xx or SP-xx
+          const regex = /^(FA|SP)\d{2}$/; // Match FA-xx or SP-xx
           if (!regex.test(value.trim())) {
             setErrors((prevErrors) => ({
               ...prevErrors,
@@ -64,14 +69,14 @@ const Form = ({onSubmit}) => {
   return (
     <form className="p-8 rounded mt-3" onSubmit={handleSubmit}>
       <div className="grid grid-cols-2 gap-6">
-        {/* Group ID */}
+        {/* Supervisor */}
         <div>
-          <label className="block text-gray-700 text-left">Group ID</label>
+          <label className="block text-gray-700 text-left">Supervisor</label>
           <input
             className="w-full bg-[#D9D9D9] mt-2 p-2 border rounded"
             readOnly
             type="text"
-            value={formData.groupId}
+            value={formData.supervisor}
           />
         </div>
 
@@ -131,7 +136,7 @@ const Form = ({onSubmit}) => {
             className="w-full fill-input mt-2 p-2 border rounded"
             name="batch"
             type="text"
-            placeholder='FA/SP - XX'
+            placeholder='FA/SPxx'
             value={formData.batch}
             onChange={handleChange}
             />
@@ -204,4 +209,4 @@ const Form = ({onSubmit}) => {
   );
 };
 
-export default Form;
+export default GroupDetailsForm;
