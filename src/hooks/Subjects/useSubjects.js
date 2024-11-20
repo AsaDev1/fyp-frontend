@@ -8,8 +8,6 @@ export const useSubjects = () => {
     
     const getSubjects = async () => {
         try {
-            
-            console.log("token from local storage: ", token)
             const response = await axios.get(`${process.env.REACT_APP_BASE_URL}courses`, {
                 headers: {
                     'Authorization': `Bearer ${token}`

@@ -65,7 +65,7 @@ const GroupForm = ({ numOfMembers, onSubmit, initialData }) => {
       {renderFields()}
       <div className="mt-8 text-right">
         <button
-          className={`py-4 px-8 rounded ${allFieldsFilled ? 'bg-red-500 text-white' : 'bg-gray-300 text-gray-600'}`}
+          className={`py-4 px-8 rounded ${allFieldsFilled ? 'bg-red-500 text-white' : 'bg-gray-300 text-gray-600 cursor-not-allowed'}`}
           disabled={!allFieldsFilled}
           onClick={handleSubmit}
         >
