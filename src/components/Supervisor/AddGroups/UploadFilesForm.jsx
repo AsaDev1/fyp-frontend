@@ -1,12 +1,21 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
+import { useSupabase } from '../../../hooks/Supabase/useSupabase';
 
 const UploadFiles = () => {
+  const { uploadFile, getFileUrl, loading, error } = useSupabase();
+
   const [wordFile, setWordFile] = useState(null);
   const [wordFileName, setWordFileName] = useState("Browse File");
+  const [wordFilePath, setWordFilePath] = useState('');
+  const [wordFileUrl, setWordFileUrl] = useState('');
+
   const [anonymousFile, setAnonymousFile] = useState(null);
   const [anonymousFileName, setAnonymousFileName] = useState("Browse File");
+  const [anonymousFilePath, setAnonymousFilePath] = useState('');
+  const [anonymousFileUrl, setAnonymousFileUrl] = useState('');
+
   const [conditionOneChecked, setConditionOneChecked] = useState(false);
   const [conditionTwoChecked, setConditionTwoChecked] = useState(false);
 
@@ -35,16 +44,18 @@ const UploadFiles = () => {
     formData.append("anonymousFile", anonymousFile);
 
     try {
-      const response = await fetch("https://your-server-endpoint.com/upload", {
-        method: "POST",
-        body: formData,
-      });
 
-      if (response.ok) {
-        alert("Files submitted successfully!");
-      } else {
-        alert("Error submitting files.");
-      }
+      const bucketName = process.env.REACT_APP_SUPABASE_BUCKET_NAME;
+
+      console.log("uploading file...");  
+      const wordPath = await uploadFile(wordFile, bucketName);
+      console.log('word file path: ', wordPath);
+      setWordFilePath(wordPath)
+
+      const anonymousPath = await uploadFile(anonymousFile, bucketName);
+      console.log('anonymous file path: ', anonymousPath);
+      setAnonymousFilePath(anonymousPath)
+
     } catch (error) {
       console.error("Upload failed:", error);
       alert("An error occurred while uploading files.");
