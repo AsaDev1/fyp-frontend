@@ -1,10 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { useNavigate, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
-import { useSupabase } from '../../../hooks/Supabase/useSupabase';
+import { faPaperclip, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+import { useSupabase } from "../../../hooks/Supabase/useSupabase";
+import { useGroups } from '../../../hooks/Groups/useGroups'
 
-const UploadFiles = ({onSubmit}) => {
-  const { uploadFile, getFileUrl, loading, error } = useSupabase();
+const UploadFiles = ({ onSubmit, initialData }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { uploadFile } = useSupabase();
+  const { createNewGroup, loading, error } = useGroups();
 
   const [wordFile, setWordFile] = useState(null);
   const [wordFileName, setWordFileName] = useState("Browse File");
@@ -17,7 +22,16 @@ const UploadFiles = ({onSubmit}) => {
   const [conditionOneChecked, setConditionOneChecked] = useState(false);
   const [conditionTwoChecked, setConditionTwoChecked] = useState(false);
 
-  // Handle file selection
+  const [isModal1Visible, setModal1Visible] = useState(false);
+  const [isModal2Visible, setModal2Visible] = useState(false);
+
+  let students_registration_numbers;
+
+  console.log("initial data at file upload component: ", initialData);
+  if(initialData.form2){
+    students_registration_numbers = initialData.form2.map((obj) => obj.id);
+  }
+
   const handleFileChange = (e, type) => {
     if (type === "word") {
       setWordFile(e.target.files[0]);
@@ -28,72 +42,69 @@ const UploadFiles = ({onSubmit}) => {
     }
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!wordFile || !anonymousFile) {
       alert("Please upload both files.");
       return;
     }
-  
+
     try {
       const bucketName = process.env.REACT_APP_SUPABASE_BUCKET_NAME;
-  
-      // Upload Word File
       const wordPath = await uploadFile(wordFile, bucketName);
       setWordFilePath(wordPath);
-  
-      // Upload Anonymous File
+
       const anonymousPath = await uploadFile(anonymousFile, bucketName);
       setAnonymousFilePath(anonymousPath);
-  
+
       const data = {
         original_copy: wordPath,
-        blind_copy: anonymousPath
-      }
-  
+        blind_copy: anonymousPath,
+      };
+
       console.log("files form data: ", data);
-      // Pass the updated form data to parent
       onSubmit(data);
-  
+
+    // Show the first modal
+      setModal1Visible(true);
     } catch (error) {
       console.error("Upload failed:", error);
       alert("An error occurred while uploading files.");
     }
   };
-  
-  // Handle form submission
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
 
-  //   if (!wordFile || !anonymousFile) {
-  //     alert("Please upload both files.");
-  //     return;
-  //   }
+  const handleModal1Submit = async () => {
 
-  //   const formData = new FormData();
-  //   formData.append("wordFile", wordFile);
-  //   formData.append("anonymousFile", anonymousFile);
+    const result = await createNewGroup(
+      initialData.form1.projectName,
+      initialData.form1.area,
+      initialData.form1.category,
+      initialData.form1.members,
+      initialData.form1.batch,
+      "Proposal Sent",
+      initialData.form1.program,
+      initialData.form1.coSupervisor,
+      students_registration_numbers,
+      wordFilePath,
+      anonymousFilePath,
+      true,
+      false
+    );
 
-  //   try {
+    if (result) {
+      console.log("Group created successfully:", result);
+    }
 
-  //     const bucketName = process.env.REACT_APP_SUPABASE_BUCKET_NAME;
+    setModal1Visible(false);
+    setModal2Visible(true);
+  };
 
-  //     console.log("uploading file...");  
-  //     const wordPath = await uploadFile(wordFile, bucketName);
-  //     console.log('word file path: ', wordPath);
-  //     setWordFilePath(wordPath)
+  const handleModalClose = () => {
+    setModal1Visible(false);
+    setModal2Visible(false);
 
-  //     const anonymousPath = await uploadFile(anonymousFile, bucketName);
-  //     console.log('anonymous file path: ', anonymousPath);
-  //     setAnonymousFilePath(anonymousPath)
-
-  //   } catch (error) {
-  //     console.error("Upload failed:", error);
-  //     alert("An error occurred while uploading files.");
-  //   }
-  // };
+  };
 
   return (
     <div className="mt-9 mr-32 text-left">
@@ -104,7 +115,6 @@ const UploadFiles = ({onSubmit}) => {
         <span className="text-red-500 text-sm">
           Please verify that proposal includes the last page of Turnitin Report + AI Report!
         </span>
-
         <label
           htmlFor="wordFile"
           className="flex items-center py-5 px-2 border border-gray-300 rounded-2xl cursor-pointer w-32 mt-4 bg-gray-200 contain-strict"
@@ -112,7 +122,6 @@ const UploadFiles = ({onSubmit}) => {
           <FontAwesomeIcon icon={faPaperclip} className="text-gray-600 mr-3 -rotate-45" />
           <span className="text-gray-700 text-sm">{wordFileName}</span>
         </label>
-
         <input
           id="wordFile"
           type="file"
@@ -126,7 +135,6 @@ const UploadFiles = ({onSubmit}) => {
         <span className="text-red-500 text-sm">
           Please verify that this does not include details of the supervisor or the students!
         </span>
-
         <label
           htmlFor="anonymousFile"
           className="flex items-center py-5 px-2 border border-gray-300 rounded-2xl cursor-pointer w-32 mt-4 bg-gray-200 contain-strict"
@@ -134,7 +142,6 @@ const UploadFiles = ({onSubmit}) => {
           <FontAwesomeIcon icon={faPaperclip} className="text-gray-600 mr-3 -rotate-45" />
           <span className="text-gray-700 text-sm">{anonymousFileName}</span>
         </label>
-
         <input
           id="anonymousFile"
           type="file"
@@ -154,7 +161,7 @@ const UploadFiles = ({onSubmit}) => {
               onChange={(e) => setConditionOneChecked(e.target.checked)}
             />
             <label htmlFor="conditionOne" className="text-sm">
-              I confirm that the proposal includes all required sections and reports.
+              Proposal is formatted correctly according to the template.
             </label>
           </div>
           <div className="flex items-center">
@@ -166,7 +173,7 @@ const UploadFiles = ({onSubmit}) => {
               onChange={(e) => setConditionTwoChecked(e.target.checked)}
             />
             <label htmlFor="conditionTwo" className="text-sm">
-              I confirm that the anonymous copy is free of identifying details.
+              Proposal includes Abstract, Related Work, Individual Tasks and References.
             </label>
           </div>
         </div>
@@ -186,8 +193,101 @@ const UploadFiles = ({onSubmit}) => {
           </button>
         </div>
       </form>
+
+      {/* Modal 1 */}
+      {isModal1Visible && (
+      <div
+      id="modal"
+      className="absolute top-0 left-0 h-screen w-screen z-10 bg-black/20 flex items-center justify-center"
+      >
+      <div className="p-8 rounded shadow-md bg-[#D9D9D9] w-2/4">
+        <div className="flex justify-between mb-6">
+          <h2 className="text-xl font-semibold">You are about to add the following students:</h2>
+          <FontAwesomeIcon icon={faTimesCircle} id="close" className="mr-3" onClick={handleModalClose} />
+        </div>
+        <table className="min-w-full border-collapse border border-gray-200">
+          <thead>
+            <tr className="bg-white text-left border border-gray-400">
+              <th className="p-2">Group Name</th>
+              <th className="p-2">Batch</th>
+              <th className="p-2">Program</th>
+              <th className="p-2">Area</th>
+              <th className="p-2">Category</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="bg-white text-left border border-gray-400">
+              <td className="p-2">{initialData.form1.projectName}</td>
+              <td className="p-2">{initialData.form1.batch}</td>
+              <td className="p-2">{initialData.form1.program}</td>
+              <td className="p-2">{initialData.form1.area}</td>
+              <td className="p-2">{initialData.form1.category}</td>
+            </tr>
+          </tbody>
+        </table>
+        <table className="min-w-full border-collapse text-left mt-8 mb-6">
+          <thead>
+            <tr className="bg-white border border-gray-400">
+              <th className="p-3">Student Id</th>
+              <th className="p-3">Name</th>
+            </tr>
+          </thead>
+          <tbody>
+          {initialData.form2.map((student)=>{
+            return (
+              <tr key={student.id} className="bg-white border border-gray-400">
+                <td className="p-3">{student.id}</td>
+                <td className="p-3">{student.name}</td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+      {/* Align button to the right */}
+      <div className="flex justify-end">
+        <button
+            id="addBtn"
+            className="bg-red-500 text-white px-8 py-2 rounded mt-4"
+            onClick={handleModal1Submit}
+            >
+              Add &nbsp;&gt;&gt;
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+      {/* Modal 2 */}
+      {isModal2Visible && !loading  && (
+        <div
+          id="modal2"
+          className="absolute top-0 left-0 h-screen w-screen z-100 bg-black/20 flex justify-center items-center"
+        >
+          <div className="p-8 rounded shadow-md bg-[#D9D9D9] w-[50%]">
+            <div className="flex justify-between mb-6">
+              <h2 className="text-xl font-semibold">FYP Group Added Successfully</h2>
+              <FontAwesomeIcon icon={faTimesCircle} id="close" className="mr-3" onClick={handleModalClose} />
+            </div>
+            <div className="overflow-x-auto mx-auto flex items-center justify-center">
+              <img src="/Assets/Tick.png" alt="Success Tick" />
+            </div>
+            {/* Align button to the right */}
+            <div className="flex justify-end">
+              <button
+                id="confirmBtn"
+                className="bg-red-500 text-white px-8 py-2 rounded mt-4"
+                onClick={handleModalClose}
+              >
+                Confirm &nbsp;&gt;&gt;
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
 
 export default UploadFiles;
+

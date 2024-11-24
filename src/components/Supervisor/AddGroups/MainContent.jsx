@@ -84,7 +84,7 @@ return (
     ) : currentStep === 3 ? (
       <SubjectsVerificationPage />  // Replace with your actual component for step 3
     ) : currentStep === 4 ? (
-      <UploadFilesForm onSubmit={handleDocsSubmit} initialData={formData.documents}/>
+      <UploadFilesForm onSubmit={handleDocsSubmit} initialData={formData}/>
     ) : (
       <div>Invalid step. Please check the URL.</div>
     )}
