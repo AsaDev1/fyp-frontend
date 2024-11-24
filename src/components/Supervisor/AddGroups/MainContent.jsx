@@ -24,6 +24,7 @@ const MainContent = () => {
       coSupervisor: '',
     },
     form2: [],
+    documents: {}
   });
 
   const handleForm1Submit = (data) => {
@@ -31,7 +32,7 @@ const MainContent = () => {
       ...prevState,
       form1: data,
     }));
-    navigate('step2');  // relative navigation
+    navigate('add-students');  // relative navigation
   };
 
   const handleForm2Submit = (data) => {
@@ -40,14 +41,29 @@ const MainContent = () => {
       form2: data,
     }));
     console.log('Final Data:', { ...formData.form1, form2: data });
-    navigate('step3'); 
+    navigate('check-prerequisites'); 
   };
 
+  const handleDocsSubmit = (data) => {
+    const { original_copy, blind_copy } = data;
+  
+    setFormData((prevState) => ({
+      ...prevState,
+      documents: {
+        original_copy: original_copy,
+        blind_copy: blind_copy,
+      },
+    }));
+  
+    console.log('Final Data after file upload:', { ...formData, documents: data });
+  };
+  
+
   const currentStep = 
-  location.pathname === '/supervisor/add-groups' ? 1 :
-  location.pathname === '/supervisor/add-groups/step2' ? 2 :
-  location.pathname === '/supervisor/add-groups/step3' ? 3 :
-  location.pathname === '/supervisor/add-groups/docs' ? 4 : 0;
+  location.pathname === '/supervisor/add-group' ? 1 :
+  location.pathname === '/supervisor/add-group/add-students' ? 2 :
+  location.pathname === '/supervisor/add-group/check-prerequisites' ? 3 :
+  location.pathname === '/supervisor/add-group/upload-docs' ? 4 : 0;
 
 return (
   <div className="flex-1 p-10 max-lg:p-6 min-h-screen">
@@ -68,7 +84,7 @@ return (
     ) : currentStep === 3 ? (
       <SubjectsVerificationPage />  // Replace with your actual component for step 3
     ) : currentStep === 4 ? (
-      <UploadFilesForm />
+      <UploadFilesForm onSubmit={handleDocsSubmit} initialData={formData.documents}/>
     ) : (
       <div>Invalid step. Please check the URL.</div>
     )}

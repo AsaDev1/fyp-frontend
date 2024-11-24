@@ -44,7 +44,7 @@ const SubjectTable = () => {
     };
 
     const handleClickNext = () => {
-        navigate('docs');
+        navigate('upload-docs');
     }
 
     // Check if all rows have "yes" selected

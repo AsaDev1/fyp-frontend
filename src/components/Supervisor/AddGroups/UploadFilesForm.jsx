@@ -3,18 +3,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperclip } from "@fortawesome/free-solid-svg-icons";
 import { useSupabase } from '../../../hooks/Supabase/useSupabase';
 
-const UploadFiles = () => {
+const UploadFiles = ({onSubmit}) => {
   const { uploadFile, getFileUrl, loading, error } = useSupabase();
 
   const [wordFile, setWordFile] = useState(null);
   const [wordFileName, setWordFileName] = useState("Browse File");
   const [wordFilePath, setWordFilePath] = useState('');
-  const [wordFileUrl, setWordFileUrl] = useState('');
 
   const [anonymousFile, setAnonymousFile] = useState(null);
   const [anonymousFileName, setAnonymousFileName] = useState("Browse File");
   const [anonymousFilePath, setAnonymousFilePath] = useState('');
-  const [anonymousFileUrl, setAnonymousFileUrl] = useState('');
 
   const [conditionOneChecked, setConditionOneChecked] = useState(false);
   const [conditionTwoChecked, setConditionTwoChecked] = useState(false);
@@ -30,37 +28,72 @@ const UploadFiles = () => {
     }
   };
 
-  // Handle form submission
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!wordFile || !anonymousFile) {
       alert("Please upload both files.");
       return;
     }
-
-    const formData = new FormData();
-    formData.append("wordFile", wordFile);
-    formData.append("anonymousFile", anonymousFile);
-
+  
     try {
-
       const bucketName = process.env.REACT_APP_SUPABASE_BUCKET_NAME;
-
-      console.log("uploading file...");  
+  
+      // Upload Word File
       const wordPath = await uploadFile(wordFile, bucketName);
-      console.log('word file path: ', wordPath);
-      setWordFilePath(wordPath)
-
+      setWordFilePath(wordPath);
+  
+      // Upload Anonymous File
       const anonymousPath = await uploadFile(anonymousFile, bucketName);
-      console.log('anonymous file path: ', anonymousPath);
-      setAnonymousFilePath(anonymousPath)
-
+      setAnonymousFilePath(anonymousPath);
+  
+      const data = {
+        original_copy: wordPath,
+        blind_copy: anonymousPath
+      }
+  
+      console.log("files form data: ", data);
+      // Pass the updated form data to parent
+      onSubmit(data);
+  
     } catch (error) {
       console.error("Upload failed:", error);
       alert("An error occurred while uploading files.");
     }
   };
+  
+  // Handle form submission
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   if (!wordFile || !anonymousFile) {
+  //     alert("Please upload both files.");
+  //     return;
+  //   }
+
+  //   const formData = new FormData();
+  //   formData.append("wordFile", wordFile);
+  //   formData.append("anonymousFile", anonymousFile);
+
+  //   try {
+
+  //     const bucketName = process.env.REACT_APP_SUPABASE_BUCKET_NAME;
+
+  //     console.log("uploading file...");  
+  //     const wordPath = await uploadFile(wordFile, bucketName);
+  //     console.log('word file path: ', wordPath);
+  //     setWordFilePath(wordPath)
+
+  //     const anonymousPath = await uploadFile(anonymousFile, bucketName);
+  //     console.log('anonymous file path: ', anonymousPath);
+  //     setAnonymousFilePath(anonymousPath)
+
+  //   } catch (error) {
+  //     console.error("Upload failed:", error);
+  //     alert("An error occurred while uploading files.");
+  //   }
+  // };
 
   return (
     <div className="mt-9 mr-32 text-left">

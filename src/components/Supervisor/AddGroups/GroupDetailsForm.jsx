@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
+import { useFaculty } from '../../../hooks/Faculty/useFaculty';
 
 const GroupDetailsForm = ({onSubmit, initialData}) => {
+    const { getCoSupervisors } = useFaculty()
+    const [coSupervisors, setCoSupervisors] = useState([])
+
     const [formData, setFormData] = useState({
       supervisor: localStorage.getItem('faculty_name'),
       projectName: '',
@@ -11,10 +15,56 @@ const GroupDetailsForm = ({onSubmit, initialData}) => {
       category: '',
       coSupervisor: '',
     });
+
+    useEffect(()=>{
+
+      const get_CoSupervisors = async () => {
+        try {
+          const response = await getCoSupervisors()
+          if (response) {
+            setCoSupervisors(response)
+          }
+        } catch (error) {
+          console.error(error)
+        }
+      }
+
+      get_CoSupervisors();
+    }, [])
     
     useEffect(() => {
       setFormData(initialData);  // Update form data when initialData changes
     }, [initialData]);
+
+
+    const [visibleOptions, setVisibleOptions] = useState(5); // Initially visible options
+    const [isOpen, setIsOpen] = useState(false); // Dropdown open state
+    const dropdownRef = useRef(null);
+
+    // Load more options when scrolling to the bottom
+    const handleScroll = (e) => {
+      const bottom =
+        e.target.scrollHeight - e.target.scrollTop <= e.target.clientHeight;
+
+      if (bottom && visibleOptions < coSupervisors.length) {
+        setVisibleOptions((prev) => prev + 5); // Load 5 more options
+      }
+    };
+
+    // Handle outside click to close the dropdown
+    const handleOutsideClick = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    useEffect(() => {
+      document.addEventListener("click", handleOutsideClick);
+      return () => {
+        document.removeEventListener("click", handleOutsideClick);
+      };
+    }, []);
+
 
 
     const [errors, setErrors] = useState({ batch: '' }); // Store validation errors
@@ -178,18 +228,64 @@ const GroupDetailsForm = ({onSubmit, initialData}) => {
         </div>
 
         {/* Co-Supervisor */}
-        <div>
+        {/* <div>
           <label className="block text-gray-700 text-left">Co-Supervisor</label>
           <select
             className="w-full fill-input mt-2 p-2 border rounded"
             name="coSupervisor"
             value={formData.coSupervisor}
             onChange={handleChange}
+            // size="5"
+            onScroll={handleScroll}
           >
             <option value="">- Optional -</option>
-            <option value="Supervisor 1">Supervisor 1</option>
-            <option value="Supervisor 2">Supervisor 2</option>
+            {coSupervisors && coSupervisors.map((coSupervisor) => (
+              <option key={coSupervisor.faculty_ID} value={coSupervisor.faculty_ID}>{coSupervisor.fullName}</option>
+            ))}
+            {coSupervisors && coSupervisors.map((coSupervisor) => (
+              <option key={coSupervisor.faculty_ID} value={coSupervisor.faculty_ID}>{coSupervisor.fullName}</option>
+            ))} {coSupervisors && coSupervisors.map((coSupervisor) => (
+              <option key={coSupervisor.faculty_ID} value={coSupervisor.faculty_ID}>{coSupervisor.fullName}</option>
+            ))}
           </select>
+        </div> */}
+        <div className="relative" ref={dropdownRef}>
+          <label className="block text-gray-700 text-left">Co-Supervisor</label>
+          <div
+            className="w-full fill-input mt-2 p-2 border rounded text-left"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {formData.coSupervisor
+              ? coSupervisors.find((supervisor) => supervisor.faculty_ID === formData.coSupervisor)
+              ?.fullName
+              : "- Optional -"
+            }
+          </div>
+              
+          {isOpen && (
+            <div
+              className="absolute w-full max-h-40 mt-1 overflow-y-auto border rounded z-10 text-left bg-gray-100"
+              onScroll={handleScroll}
+            >
+              {coSupervisors.slice(0, visibleOptions).map((coSupervisor) => (
+                <div
+                  key={coSupervisor.faculty_ID}
+                  className="p-2 hover:bg-gray-200"
+                  onClick={() => {
+                    handleChange({
+                      target: {
+                        name: "coSupervisor",
+                        value: coSupervisor.faculty_ID,
+                      },
+                    });
+                    setIsOpen(false);
+                  }}
+                >
+                  {coSupervisor.fullName}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
