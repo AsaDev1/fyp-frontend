@@ -4,11 +4,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperclip, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 import { useSupabase } from "../../../hooks/Supabase/useSupabase";
 import { useGroups } from '../../../hooks/Groups/useGroups'
+import Loader from "../../Global/Loader/Loader";
+import { supabase } from "../../../config/supabaseClient";
 
 const UploadFiles = ({ onSubmit, initialData }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { uploadFile } = useSupabase();
+  const { uploadFile, loadingSupabase } = useSupabase();
   const { createNewGroup, loading, error } = useGroups();
 
   const [wordFile, setWordFile] = useState(null);
@@ -107,6 +109,12 @@ const UploadFiles = ({ onSubmit, initialData }) => {
   };
 
   return (
+    <>
+    
+    {(loadingSupabase || loading) && (
+        <Loader />
+    )}
+
     <div className="mt-9 mr-32 text-left">
       <span>Please upload the Project Proposal:</span>
       <form onSubmit={handleSubmit}>
@@ -200,7 +208,7 @@ const UploadFiles = ({ onSubmit, initialData }) => {
       id="modal"
       className="absolute top-0 left-0 h-screen w-screen z-10 bg-black/20 flex items-center justify-center"
       >
-      <div className="p-8 rounded shadow-md bg-[#D9D9D9] w-2/4">
+      <div className="p-8 rounded shadow-md bg-gray-100 w-2/4 relative left-[5%]">
         <div className="flex justify-between mb-6">
           <h2 className="text-xl font-semibold">You are about to add the following students:</h2>
           <FontAwesomeIcon icon={faTimesCircle} id="close" className="mr-3" onClick={handleModalClose} />
@@ -258,12 +266,12 @@ const UploadFiles = ({ onSubmit, initialData }) => {
 )}
 
       {/* Modal 2 */}
-      {isModal2Visible && !loading  && (
+      {isModal2Visible && !loading  && !error && (
         <div
           id="modal2"
           className="absolute top-0 left-0 h-screen w-screen z-100 bg-black/20 flex justify-center items-center"
         >
-          <div className="p-8 rounded shadow-md bg-[#D9D9D9] w-[50%]">
+          <div className="p-8 rounded shadow-md bg-gray-100 relative left-[5%] w-[50%]">
             <div className="flex justify-between mb-6">
               <h2 className="text-xl font-semibold">FYP Group Added Successfully</h2>
               <FontAwesomeIcon icon={faTimesCircle} id="close" className="mr-3" onClick={handleModalClose} />
@@ -285,7 +293,35 @@ const UploadFiles = ({ onSubmit, initialData }) => {
         </div>
       )}
 
+      {isModal2Visible && !loading  && error && (
+        <div
+          id="modal2"
+          className="absolute top-0 left-0 h-screen w-screen z-100 bg-black/20 flex justify-center items-center"
+        >
+          <div className="p-8 rounded shadow-md bg-gray-100 relative left-[5%] w-[50%]">
+            <div className="flex justify-between mb-6">
+              <h2 className="text-xl font-semibold">Error occured while adding the groups!</h2>
+              <FontAwesomeIcon icon={faTimesCircle} id="close" className="mr-3" onClick={handleModalClose} />
+            </div>
+            {/* <div className="overflow-x-auto mx-auto flex items-center justify-center">
+              <img src="/Assets/Tick.png" alt="Success Tick" />
+            </div> */}
+            {/* Align button to the right */}
+            <div className="flex justify-end">
+              <button
+                id="confirmBtn"
+                className="bg-red-500 text-white px-8 py-2 rounded mt-4"
+                onClick={handleModalClose}
+              >
+                Confirm &nbsp;&gt;&gt;
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
+    </>
   );
 };
 

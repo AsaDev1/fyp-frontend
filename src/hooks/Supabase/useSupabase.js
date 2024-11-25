@@ -3,11 +3,11 @@ import { supabase } from '../../config/supabaseClient';
 import { v4 as uuidv4 } from 'uuid';
 
 export const useSupabase = () => {
-    const [loading, setLoading] = useState(false);
+    const [loadingSupabase, setLoadingSupabase] = useState(false);
     const [error, setError] = useState(null);
 
     async function uploadFile(file, bucketName) {
-        setLoading(true);
+        setLoadingSupabase(true);
         setError(null);
         try {
             // Generate a unique identifier and concatenate it to the file name
@@ -19,7 +19,7 @@ export const useSupabase = () => {
             });
     
             if (error) {
-                console.error("Error uploading file:", error.message);
+                console.error("Error uploading Supabase file:", error.message);
                 setError(error.message);
                 return null; // Return null on error
             }
@@ -32,7 +32,7 @@ export const useSupabase = () => {
             setError(err.message);
             return null; // Return null on any error
         } finally {
-            setLoading(false);
+            setLoadingSupabase(false);
         }
     }
     
@@ -56,7 +56,7 @@ export const useSupabase = () => {
 
     // Download a file from Supabase
     async function downloadFile(bucketName, filePath) {
-        setLoading(true);
+        setLoadingSupabase(true);
         setError(null);
 
         try {
@@ -78,9 +78,9 @@ export const useSupabase = () => {
             setError(err.message);
             return null;
         } finally {
-            setLoading(false);
+            setLoadingSupabase(false);
         }
   }
 
-    return { uploadFile, getFileUrl, downloadFile, loading, error };
+    return { uploadFile, getFileUrl, downloadFile, loadingSupabase, error };
 };

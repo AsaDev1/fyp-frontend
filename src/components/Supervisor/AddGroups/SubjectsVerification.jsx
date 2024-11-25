@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSubjects } from '../../../hooks/Subjects/useSubjects';
+import Loader from '../../Global/Loader/Loader'
 
 const SubjectTable = () => {
     const navigate = useNavigate();
@@ -51,6 +52,9 @@ const SubjectTable = () => {
     const allYesSelected = rows.every((row) => row.yes);
 
     return (
+        rows.length <= 0 ? (
+            <Loader/>
+        ) : (
         <div className="mt-9 mr-32">
             <span className="text-left">
                 <p>Please confirm that if the students have cleared all the Prerequisites of FYP-I</p>
@@ -102,7 +106,7 @@ const SubjectTable = () => {
                 </button>
             </div>
         </div>
-    );
+    ));
 };
 
 export default SubjectTable;

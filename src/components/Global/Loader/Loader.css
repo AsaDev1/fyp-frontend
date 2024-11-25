@@ -1,0 +1,14 @@
+.loader {
+  width: 120px;
+  height: 120px;
+  animation: flip 2s linear infinite;
+}
+
+@keyframes flip {
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(360deg);
+  }
+}

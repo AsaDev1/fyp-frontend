@@ -20,7 +20,7 @@ function LoginPage() {
     const response = await login(email, password)
     if(response){
       if(response.status === 'success')
-        navigate('/supervisor/add-groups')
+        navigate('/supervisor/add-group')
     }
   }
  
